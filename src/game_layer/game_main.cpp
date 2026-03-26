@@ -1,20 +1,36 @@
 #include "game_main.hpp"
 
 #include <algorithm>
-#include <iostream>
 
 #include <raylib.h>
+
+#include "asset_manager.hpp"
+#include "game_map.hpp"
 
 // This structure holds all of the game data (hence, the name). We make it static so that it is
 // private to this translation unit, preventing other files from accessing it willy-nilly.
 static struct GameData
 {
-    float position_x = 100.0f;
-    float position_y = 100.0f;
+    GameMap game_map;
 } game_data;
+
+/// The global asset manager.
+///
+/// This should be kept separate from the game data structure, since we want to keep the assets
+/// loaded even if the game data gets reset.
+AssetManager asset_manager;
 
 bool init_game()
 {
+    asset_manager.load_all();
+
+    game_data.game_map.create(30, 10);
+    game_data.game_map.get_block_unsafe(0, 0).type = Block::Dirt;
+    game_data.game_map.get_block_unsafe(1, 1).type = Block::Dirt;
+    game_data.game_map.get_block_unsafe(2, 2).type = Block::Dirt;
+    game_data.game_map.get_block_unsafe(3, 3).type = Block::Dirt;
+    game_data.game_map.get_block_unsafe(4, 4).type = Block::Dirt;
+
     return true;
 }
 
@@ -28,12 +44,37 @@ bool update_game()
     // 200 milliseconds.
     const float dt = std::min(GetFrameTime(), 0.2f);
 
-    if (IsKeyDown(KEY_A)) { game_data.position_x -= speed * dt; }
-    if (IsKeyDown(KEY_D)) { game_data.position_x += speed * dt; }
-    if (IsKeyDown(KEY_W)) { game_data.position_y -= speed * dt; }
-    if (IsKeyDown(KEY_S)) { game_data.position_y += speed * dt; }
+    ClearBackground({75, 75, 150, 255});
 
-    DrawRectangle(game_data.position_x, game_data.position_y, 50, 50, c);
+    for (int y = 0; y < game_data.game_map.height; y++)
+    {
+        for (int x = 0; x < game_data.game_map.width; x++)
+        {
+            const Block &block = game_data.game_map.get_block_unsafe(x, y);
+
+            if (block.type == Block::Air)
+            {
+                continue;
+            }
+
+            const float size = 32.0f;
+            const float pos_x = x * size;
+            const float pos_y = y * size;
+
+            DrawTexturePro(
+                asset_manager.dirt,
+                {
+                    0.0f,
+                    0.0f,
+                    static_cast<float>(asset_manager.dirt.width),
+                    static_cast<float>(asset_manager.dirt.height),
+                },
+                {pos_x, pos_y, size, size},
+                {0.0f, 0.0f},
+                0.0f,
+                WHITE);
+        }
+    }
 
     return true;
 }
@@ -43,5 +84,4 @@ void close_game()
     // Word of warning: with the current setup, if the player types ^C in the terminal or kills the
     // process, this function will not be called. That means that the game data will not be saved.
     // Maybe this could be changed with atexit or signal handling?
-    std::cout << "\n\nCLOSED!!!\n\n";
 }

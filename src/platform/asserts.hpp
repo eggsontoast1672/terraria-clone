@@ -20,9 +20,9 @@ void assertFuncInternal(const char *expression, const char *file_name, unsigned 
 #endif
 
 #if DEVELOPLEMT_BUILD
-#define permaAssertDevelopement permaAssert
-#define permaAssertCommentDevelopement permaAssertComment
+#define permaAssertDevelopment permaAssert
+#define permaAssertCommentDevelopment permaAssertComment
 #else
-#define permaAssertDevelopement
-#define permaAssertCommentDevelopement
+#define permaAssertDevelopment
+#define permaAssertCommentDevelopment
 #endif

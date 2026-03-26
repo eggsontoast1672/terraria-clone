@@ -65,8 +65,12 @@ target_link_libraries(rlimgui PRIVATE imgui raylib)
 
 add_executable(
   terraria-clone
+  src/game_layer/asset_manager.hpp
+  src/game_layer/asset_manager.cpp
   src/game_layer/game_main.hpp
   src/game_layer/game_main.cpp
+  src/game_layer/game_map.hpp
+  src/game_layer/game_map.cpp
   src/platform/asserts.hpp
   src/platform/asserts.cpp
   src/platform/main.cpp

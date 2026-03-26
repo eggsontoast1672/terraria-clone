@@ -47,15 +47,6 @@ int main()
             CloseWindow();
         }
 
-        static float a = 0.0f;
-
-        // We can have more than one window by calling ImGui::Begin and ImGui::End multiple times!
-        ImGui::Begin("Second Window");
-        ImGui::Separator();
-        ImGui::NewLine();
-        ImGui::SliderFloat("slider", &a, 0.0f, 1.0f);
-        ImGui::End();
-
         rlImGuiEnd();
         EndDrawing();
     }
