@@ -2,10 +2,19 @@
 #include <raylib.h>
 #include <rlImGui.h>
 
+#include "game_main.hpp"
+
 int main()
 {
+#if PRODUCTION_BUILD
+    SetTraceLogLevel(LOG_NONE);
+#endif
+
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(800, 450, "Hello!");
+    SetExitKey(KEY_NULL);
+    SetTargetFPS(60);
+
     rlImGuiSetup(true);
 
     ImGuiIO &io = ImGui::GetIO();
@@ -13,13 +22,16 @@ int main()
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     // io.FontGlobalScale = 2; // If we wanted to change the font size, this is how we would do it.
 
-    // constexpr Color c{0xff, 0x00, 0xc8, 0xff};
+    if (!init_game())
+    {
+        return 1;
+    }
 
     while (!WindowShouldClose())
     {
         BeginDrawing();
-        ClearBackground(RAYWHITE);
-        
+        ClearBackground(BLACK);
+
         rlImGuiBegin();
 
         // This allows us to dock windows inside of the main viewport, instead of only being able
@@ -30,28 +42,10 @@ int main()
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
         ImGui::PopStyleColor(2);
 
-        static bool c = false;
-        static int input_int = 0;
-        static float floats[3]{};
-        static float vslider = 0.0f;
-        static float color = 0.0f;
-        static float color2 = 0.0f;
-
-        ImGui::Begin("test");
-        ImGui::Checkbox("Program the game", &c);
-        ImGui::RadioButton("An active radio button", true);
-        ImGui::RadioButton("An inactive radio button", false);
-        ImGui::InputInt("Type a number", &input_int);
-        ImGui::DragFloat3("Dragging 3 floats", floats);
-        ImGui::VSliderFloat("A vslider", ImVec2(10, 10), &vslider, 0.0f, 1.0f);
-        ImGui::ColorEdit3("Color edit!", &color);
-        ImGui::ColorPicker4("A color picker", &color2);
-        ImGui::BeginChild("Hello from the child");
-        ImGui::ProgressBar(0.67f);
-        ImGui::CollapsingHeader("Collapsing header?");
-        ImGui::TreeNode("A tree node");
-        ImGui::EndChild();
-        ImGui::End();
+        if (!update_game())
+        {
+            CloseWindow();
+        }
 
         static float a = 0.0f;
 
@@ -69,5 +63,8 @@ int main()
     rlImGuiShutdown();
     CloseWindow();
 
-    return 0;
+    // We close out the game and unload resources *after* the window is closed. The unloading
+    // process can take a lot of time, and we do not want the window to hang unresponsively while 
+    // that is happening.
+    close_game();
 }

@@ -65,7 +65,9 @@ target_link_libraries(rlimgui PRIVATE imgui raylib)
 
 add_executable(
   terraria-clone
-  src/main.cpp
+  src/game_layer/game_main.hpp
+  src/game_layer/game_main.cpp
+  src/platform/main.cpp
 )
 
 set_property(TARGET terraria-clone PROPERTY CXX_STANDARD 17)
@@ -73,7 +75,7 @@ set_property(TARGET terraria-clone PROPERTY CXX_STANDARD_REQUIRED ON)
 set_property(TARGET terraria-clone PROPERTY CXX_EXTENSIONS OFF)
 
 target_compile_options(terraria-clone PRIVATE -mavx2 -mfma)
-target_include_directories(terraria-clone PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/")
+target_include_directories(terraria-clone PRIVATE src/game_layer src/platform)
 target_link_libraries(terraria-clone PRIVATE imgui raylib rlimgui)
 
 if(PRODUCTION_BUILD)

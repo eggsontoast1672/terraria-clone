@@ -1,4 +1,6 @@
 ColumnLimit: 0
 IndentWidth: 4
 
+AllowShortBlocksOnASingleLine: Always
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 BreakBeforeBraces: Allman
