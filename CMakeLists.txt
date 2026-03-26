@@ -67,6 +67,8 @@ add_executable(
   terraria-clone
   src/game_layer/game_main.hpp
   src/game_layer/game_main.cpp
+  src/platform/asserts.hpp
+  src/platform/asserts.cpp
   src/platform/main.cpp
 )
 
