@@ -47,6 +47,8 @@ int main()
             CloseWindow();
         }
 
+        DrawFPS(10, 10);
+
         rlImGuiEnd();
         EndDrawing();
     }

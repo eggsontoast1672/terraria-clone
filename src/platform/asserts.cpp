@@ -101,9 +101,9 @@ void assertFuncProduction(const char *expression, const char *file_name, unsigne
 {
     std::cout
         << "Assertion failed: " << expression
-        << " file: " << file_name
-        << " line: " << line_number
-        << "Comment: " << comment
+        << "\nFile: " << file_name
+        << "\nLine: " << line_number
+        << "\nComment: " << comment
         << '\n';
 
     assert(0);
@@ -114,9 +114,9 @@ void assertFuncInternal(const char *expression, const char *file_name, unsigned 
 {
     std::cout
         << "Assertion failed: " << expression
-        << " file: " << file_name
-        << " line: " << line_number
-        << "Comment: " << comment
+        << "\nFile: " << file_name
+        << "\nLine: " << line_number
+        << "\nComment: " << comment
         << '\n';
 
     __builtin_trap(); // put a break point here

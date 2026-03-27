@@ -27,7 +27,10 @@ bool init_game()
 {
     asset_manager.load_all();
 
-    game_data.game_map.create(30, 10);
+    game_data.game_map.create(700, 500);
+
+    std::fill(game_data.game_map.map_data.begin(), game_data.game_map.map_data.end(), Block{Block::WoodPlank});
+
     game_data.game_map.get_block_unsafe(0, 0).type = Block::Dirt;
     game_data.game_map.get_block_unsafe(1, 1).type = Block::Grass;
     game_data.game_map.get_block_unsafe(2, 2).type = Block::GoldBlock;
@@ -39,6 +42,40 @@ bool init_game()
     game_data.camera.zoom = 100.0f;
 
     return true;
+}
+
+static Vector2 get_screen_dimensions()
+{
+    return {
+        static_cast<float>(GetScreenWidth()),
+        static_cast<float>(GetScreenHeight()),
+    };
+}
+
+/// Compute the visible region of the map.
+///
+/// Rendering every object in the game world begins to be painfully slow once there are tons of
+/// them. Since only a small portion of the world is visible at a time, this function proves the
+/// visible portion of the world so that only objects in that region are rendered. Note that this
+/// function clamps the viewport to the size of the map for pragmatics, since this data is only
+/// used to figure out how much of the map to render.
+static Rectangle get_viewport(Camera2D camera)
+{
+    const Vector2 top_left_view = GetScreenToWorld2D({0.0f, 0.0f}, game_data.camera);
+    const Vector2 bottom_right_view = GetScreenToWorld2D(get_screen_dimensions(), game_data.camera);
+
+    // These offsets ensure that the world does not appear cut off.
+    float start_x_view = std::floor(top_left_view.x - 1.0f);
+    float start_y_view = std::floor(top_left_view.y - 1.0f);
+    float end_x_view = std::ceil(bottom_right_view.x + 1.0f);
+    float end_y_view = std::ceil(bottom_right_view.y + 1.0f);
+
+    start_x_view = std::clamp(start_x_view, 0.0f, game_data.game_map.width - 1.0f);
+    start_y_view = std::clamp(start_y_view, 0.0f, game_data.game_map.height - 1.0f);
+    end_x_view = std::clamp(end_x_view, 0.0f, game_data.game_map.width - 1.0f);
+    end_y_view = std::clamp(end_y_view, 0.0f, game_data.game_map.height - 1.0f);
+
+    return {start_x_view, start_y_view, end_x_view, end_y_view};
 }
 
 bool update_game()
@@ -64,13 +101,35 @@ bool update_game()
     const float block_x = std::floor(world_pos.x);
     const float block_y = std::floor(world_pos.y);
 
-    ClearBackground({75, 75, 150, 255});
+    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+    {
+        Block *const block = game_data.game_map.get_block(block_x, block_y);
 
+        if (block != nullptr)
+        {
+            block->type = Block::Air;
+        }
+    }
+
+    if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
+    {
+        Block *const block = game_data.game_map.get_block(block_x, block_y);
+
+        if (block != nullptr)
+        {
+            // For now, we can only place gold blocks, but that will change.
+            block->type = Block::GoldBlock;
+        }
+    }
+
+    ClearBackground({75, 75, 150, 255});
     BeginMode2D(game_data.camera);
 
-    for (int y = 0; y < game_data.game_map.height; y++)
+    const Rectangle viewport = get_viewport(game_data.camera);
+
+    for (int y = viewport.y; y < viewport.height; y++)
     {
-        for (int x = 0; x < game_data.game_map.width; x++)
+        for (int x = viewport.x; x < viewport.width; x++)
         {
             const Block &block = game_data.game_map.get_block_unsafe(x, y);
 
