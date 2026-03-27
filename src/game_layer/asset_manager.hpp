@@ -11,6 +11,7 @@
 struct AssetManager
 {
     Texture2D dirt;
+    Texture2D texture_atlas;
 
     void load_all();
 };

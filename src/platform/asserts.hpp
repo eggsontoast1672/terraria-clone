@@ -3,7 +3,7 @@
 void assertFuncProduction(const char *expression, const char *file_name, unsigned line_number, const char *comment = "---");
 void assertFuncInternal(const char *expression, const char *file_name, unsigned line_number, const char *comment = "---");
 
-#if DEVELOPLEMT_BUILD
+#if !PRODUCTION_BUILD
 #define permaAssert(expression) \
     (void)((!!(expression)) ||  \
            (assertFuncInternal(#expression, __FILE__, (unsigned)(__LINE__)), 0))
@@ -19,7 +19,7 @@ void assertFuncInternal(const char *expression, const char *file_name, unsigned 
            (assertFuncProduction(#expression, __FILE__, (unsigned)(__LINE__), comment), 1))
 #endif
 
-#if DEVELOPLEMT_BUILD
+#if !PRODUCTION_BUILD
 #define permaAssertDevelopment permaAssert
 #define permaAssertCommentDevelopment permaAssertComment
 #else

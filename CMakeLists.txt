@@ -71,6 +71,8 @@ add_executable(
   src/game_layer/game_main.cpp
   src/game_layer/game_map.hpp
   src/game_layer/game_map.cpp
+  src/game_layer/helpers.hpp
+  src/game_layer/helpers.cpp
   src/platform/asserts.hpp
   src/platform/asserts.cpp
   src/platform/main.cpp
