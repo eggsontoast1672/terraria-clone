@@ -1,6 +1,7 @@
 #include "game_main.hpp"
 
 #include <algorithm>
+#include <cmath>
 
 #include <raylib.h>
 
@@ -56,6 +57,13 @@ bool update_game()
     if (IsKeyDown(KEY_UP)) game_data.camera.target.y -= camera_speed * dt;
     if (IsKeyDown(KEY_DOWN)) game_data.camera.target.y += camera_speed * dt;
 
+    // This code converts the mouse's current position in screen space coordinates to an absolute
+    // world position, according to the camera data. With this, we will be able to highlight the
+    // block that is currently selected.
+    const Vector2 world_pos = GetScreenToWorld2D(GetMousePosition(), game_data.camera);
+    const float block_x = std::floor(world_pos.x);
+    const float block_y = std::floor(world_pos.y);
+
     ClearBackground({75, 75, 150, 255});
 
     BeginMode2D(game_data.camera);
@@ -80,6 +88,12 @@ bool update_game()
             DrawTexturePro(asset_manager.texture_atlas, source, dest, {0.0f, 0.0f}, 0.0f, WHITE);
         }
     }
+
+    DrawTexturePro(
+        asset_manager.frame,
+        {0.0f, 0.0f, static_cast<float>(asset_manager.frame.width), static_cast<float>(asset_manager.frame.height)},
+        {block_x, block_y, 1.0f, 1.0f},
+        {0.0f, 0.0f}, 0.0f, WHITE);
 
     EndMode2D();
 
